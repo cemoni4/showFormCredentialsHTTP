@@ -1,67 +1,52 @@
-# showFormCredentialsHTTP
-# Packet Sniffer for GZIP Decompression and Form Data Extraction 🐍🔍
+# HTTP Packet Monitor & Form Sniffer 🛡️
 
-This Python script is designed to monitor and analyze network traffic, specifically focusing on GZIP compression in HTTP responses and extracting form data (username and password) from HTTP POST requests.
+## Description 📘
+This project is a Python script that captures and analyzes HTTP traffic, detects GZIP-compressed content, and extracts form data (like usernames and passwords) sent through POST requests. It uses `netfilterqueue` and `scapy` for packet manipulation.
 
-## Features ✨
+## Features ⚡
+- **HTTP Packet Interception**: Captures HTTP packets on port 80.
+- **GZIP Decompression**: Detects and decompresses GZIP-encoded responses.
+- **Form Data Extraction**: Parses POST requests to extract form credentials.
+- **Real-Time Monitoring**: Displays packet and form data in real time.
 
-- **GZIP Decompression**: Automatically detects and decompresses GZIP-encoded data in HTTP responses.
-- **Form Data Extraction**: Captures form data (such as usernames and passwords) from HTTP POST requests.
-- **Packet Sniffing**: Uses Scapy and NetfilterQueue to monitor packets in real-time.
+## Requirements 🛠️
+- Python 3
+- Libraries:
+  - `netfilterqueue`
+  - `scapy`
 
-## Requirements ⚙️
+Install the required libraries with:
+```bash
+pip install netfilterqueue scapy
+```
 
-Before running the script, ensure you have the following Python packages installed:
+## Firewall Configuration 🔥
+To make the script work, you need to set up an iptables rule to forward traffic to the Netfilter queue:
+```bash
+iptables -I FORWARD -j NFQUEUE --queue-num 1
+```
 
-- `scapy`
-- `netfilterqueue`
-- `zlib`
-- `urllib.parse`
+For local testing:
+```bash
+iptables -I OUTPUT -j NFQUEUE --queue-num 1
+iptables -I INPUT -j NFQUEUE --queue-num 1
+```
 
-You can install the required packages using `pip`:
+After running the script, reset the rules with:
+```bash
+iptables --flush
+```
 
-CODICE
-pip install scapy netfilterqueue
-CODICE
+## Execution ▶️
+Run the script with:
+```bash
+sudo python3 http_sniffer.py
+```
 
-> ⚠️ **Note**: The script requires **root privileges** to capture network traffic.
+## Warning ⚠️
+Running this script requires superuser privileges and modifies firewall rules. HTTP transmits data in plaintext, so this tool highlights how attackers might intercept sensitive information. Use responsibly and only in controlled environments for educational or testing purposes!
 
-## How It Works 🛠️
+## License 📄
+Distributed under the MIT License.
 
-1. **GZIP Detection**: The script scans HTTP packets for the `Content-Encoding: gzip` header. When it detects this header, it decompresses the corresponding GZIP-encoded data.
-2. **Form Data Extraction**: When a POST request is detected, the script attempts to extract form data (specifically `username` and `password`) from the HTTP body.
-3. **Packet Monitoring**: The script uses NetfilterQueue to capture and inspect network packets in real-time.
-
-## Usage 🚀
-
-1. Make sure you have **root privileges**, as this script needs to capture packets on the network.
-2. Run the script:
-
-CODICE
-sudo python3 packet_sniffer.py
-CODICE
-
-3. The script will start monitoring packets and will display:
-
-   - Detected **GZIP-encoded data** in HTTP responses.
-   - Extracted **form data (username and password)** from HTTP POST requests.
-
-4. Press `Ctrl+C` to stop the script.
-
-## Example Output 📊
-
-- **GZIP Detected**: The script will print a message when it detects GZIP-encoded data.
-
-    CODICE
-    Dati GZIP rilevati nella risposta.
-    CODICE
-
-- **Form Data Extracted**: If form data is successfully extracted, it will display the username and password.
-
-    CODICE
-    Form trovato: Username:  ['user123']  Password:  ['password456']
-    CODICE
-
-## License 📜
-
-This project is licensed under the MIT License.
+---
